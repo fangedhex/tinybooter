@@ -1,0 +1,11 @@
+# Binary
+tinybooter
+
+# Test
+tinybooter.d
+
+# VSCode
+.vscode
+
+# Git
+.gitignore

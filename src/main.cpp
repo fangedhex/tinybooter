@@ -22,15 +22,14 @@ bool has_suffix(const std::string &str, const std::string &suffix)
 }
 
 #include "INIReader.h"
-#define CONFIG_DIR "./tinybooter.d"
 
-std::vector<Service> loadConfig() 
+std::vector<Service> loadConfig(std::string path) 
 {
     DIR*    dir;
     dirent* pdir;
     std::vector<Service> services;
 
-    dir = opendir(CONFIG_DIR);
+    dir = opendir(path.c_str());
 
     while ((pdir = readdir(dir))) {
         std::string str = pdir->d_name;
@@ -39,8 +38,8 @@ std::vector<Service> loadConfig()
             if(has_suffix(str, ".ini"))
             {
                 // Preparing path
-                std::string sub_path = CONFIG_DIR;
-                if(!has_suffix(CONFIG_DIR, "/")) sub_path += "/";
+                std::string sub_path = path;
+                if(!has_suffix(path, "/")) sub_path += "/";
                 sub_path += str;
 
                 // Reading config
@@ -52,6 +51,9 @@ std::vector<Service> loadConfig()
                         reader.GetBoolean("", "restart", true),
                         static_cast<unsigned short>(reader.GetInteger("", "max_retry", 5))
                     }; 
+
+                    if(!service.restart) service.max_retry = 0;
+
                     services.push_back(service);
                 }
             }            
@@ -135,7 +137,11 @@ void launch_service(Service& service)
 
 int main(int argc, char const *argv[])
 {
-    auto services = loadConfig();
+    if(argc < 2) {
+        std::cerr << "Syntax : " << argv[0] << " <config_dir>" << std::endl;
+        return 1;
+    }
+    auto services = loadConfig(argv[1]);
 
     // Launching each service in a separate thread
     for(auto& service : services)
