@@ -1,8 +1,7 @@
 deploy:
     stage: deploy
     script:
-        - docker build -t fangedhex/tinybooter .
-        - docker login -u fangedhex
-        - docker push fangedhex/tinybooter
+        - docker build -t fangedhex/tinybooter:latest .
+        - docker push fangedhex/tinybooter:latest
     only: 
         - master
