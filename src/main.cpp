@@ -2,7 +2,6 @@
 #include <dirent.h>
 #include <vector>
 #include <string>
-
 #include <thread>
 
 struct Service
@@ -14,7 +13,6 @@ struct Service
 
     std::thread *pid;
 };
-
 
 bool has_suffix(const std::string &str, const std::string &suffix)
 {
@@ -135,13 +133,33 @@ void launch_service(Service& service)
     }    
 }
 
+#include <signal.h>
+
+void interrupt(int signal)
+{
+    exit(0);
+}
+
+void register_signal(int sig)
+{
+    if(SIG_ERR == signal(sig, interrupt)) 
+    {
+        std::cerr << "Cannot register signal !" << std::endl;
+        exit(2);
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     if(argc < 2) {
         std::cerr << "Syntax : " << argv[0] << " <config_dir>" << std::endl;
         return 1;
     }
-    auto services = loadConfig(argv[1]);
+
+    register_signal(SIGINT);
+    register_signal(SIGTERM);
+
+    auto services = loadConfig(argv[1]);    
 
     // Launching each service in a separate thread
     for(auto& service : services)
