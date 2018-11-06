@@ -12,6 +12,7 @@ struct Service
     unsigned short max_retry;
 
     std::thread *pid;
+    bool is_running;
 };
 
 bool has_suffix(const std::string &str, const std::string &suffix)
@@ -106,6 +107,7 @@ void service_log(Service& service, Arg&& arg, Args&&... args)
 
 void launch_service(Service& service)
 {
+    service.is_running = false;
     unsigned short retry = 0;
     do
     {
@@ -114,6 +116,7 @@ void launch_service(Service& service)
 
         if(stream)
         {
+            service.is_running = true;
             while(!feof(stream))
             {
                 service_log(service, read_line(stream));
@@ -124,6 +127,7 @@ void launch_service(Service& service)
                 retry++;
                 if(retry >= service.max_retry) service.restart = false;
             }
+            service.is_running = false;
         }   
     }while(service.restart);
 
@@ -133,10 +137,51 @@ void launch_service(Service& service)
     }    
 }
 
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#define UNIX_PATH_MAX 108
+
+bool healthcheck_run = true;
+int sock;
+struct sockaddr_un {
+    sa_family_t sun_family;               /* AF_UNIX */
+    char        sun_path[UNIX_PATH_MAX];  /* pathname */
+};
+
+void healthcheck_socket(std::vector<Service>& services)
+{
+    sock = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    {
+        sockaddr_un addr{AF_UNIX, "/var/run/healthcheck.sock"};
+        bind(sock, (sockaddr*)&addr, sizeof(addr));
+    }
+    
+    listen(sock, 5);
+
+    while(healthcheck_run)
+    {
+        int client_sock = accept(sock, NULL, 0);
+
+        unsigned short count = 0;
+        for(Service& service : services)
+        {
+            if(service.is_running) count++;
+        }
+
+        bool is_ok = (count == services.size());
+        send(client_sock, &is_ok, sizeof(is_ok), 0);
+        close(client_sock);
+    }
+}
+
 #include <signal.h>
 
 void interrupt(int signal)
 {
+    healthcheck_run = false;
+    close(sock);
     exit(0);
 }
 
@@ -157,9 +202,10 @@ int main(int argc, char const *argv[])
     }
 
     register_signal(SIGINT);
-    register_signal(SIGTERM);
+    register_signal(SIGTERM);    
 
     auto services = loadConfig(argv[1]);    
+    std::thread healthcheck_th(healthcheck_socket, std::ref(services));
 
     // Launching each service in a separate thread
     for(auto& service : services)
@@ -173,6 +219,9 @@ int main(int argc, char const *argv[])
         service.pid->join();
         delete service.pid;
     }
+
+    healthcheck_run = false;
+    healthcheck_th.join();
 
     return 0;
 }
