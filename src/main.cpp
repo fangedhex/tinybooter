@@ -127,7 +127,8 @@ void launch_service(Service& service)
                 retry++;
                 if(retry >= service.max_retry) service.restart = false;
             }
-            service.is_running = false;
+            
+            if(service.max_retry > 0) service.is_running = false;
         }   
     }while(service.restart);
 
