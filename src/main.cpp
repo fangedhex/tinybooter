@@ -81,12 +81,20 @@ std::string read_line(FILE *stream)
     return str;
 }
 
+#include <chrono>
+#include <iomanip>
+#include <mutex>
+
+std::mutex log_mutex;
 void service_log(Service& service, std::string str)
 {
-    using std::cout, std::endl;
+    using std::cout, std::endl;    
 
     if(str.size() > 1)
     {
+        std::lock_guard<std::mutex> guard(log_mutex);
+        auto NOW = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
+        cout << "[" << std::put_time(std::localtime(&NOW), "%F %T") << "] ";
         cout << "[" << service.name << "] " << str << endl;
     }
 }
