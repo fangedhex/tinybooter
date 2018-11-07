@@ -1,6 +1,7 @@
 # Binary
 /tinybooter
 /healthcheck
+*.o
 
 # Test
 /tinybooter.d

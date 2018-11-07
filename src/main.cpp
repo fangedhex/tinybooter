@@ -3,6 +3,17 @@
 #include <vector>
 #include <string>
 #include <thread>
+#include <chrono>
+#include <iomanip>
+#include <mutex>
+#include <sstream>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <signal.h>
+
+#include "shared.h"
+#include "INIReader.h"
 
 struct Service
 {
@@ -11,16 +22,14 @@ struct Service
     bool restart;
     unsigned short max_retry;
 
-    std::thread *pid;
-    bool is_running;
+    std::thread *pid = nullptr;
+    bool is_running = false;
 };
 
 bool has_suffix(const std::string &str, const std::string &suffix)
 {
     return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
-
-#include "INIReader.h"
 
 std::vector<Service> loadConfig(std::string path) 
 {
@@ -81,10 +90,6 @@ std::string read_line(FILE *stream)
     return str;
 }
 
-#include <chrono>
-#include <iomanip>
-#include <mutex>
-
 std::mutex log_mutex;
 void service_log(Service& service, std::string str)
 {
@@ -98,8 +103,6 @@ void service_log(Service& service, std::string str)
         cout << "[" << service.name << "] " << str << endl;
     }
 }
-
-#include <sstream>
 
 template<typename Arg, typename... Args>
 void service_log(Service& service, Arg&& arg, Args&&... args)
@@ -115,9 +118,10 @@ void service_log(Service& service, Arg&& arg, Args&&... args)
 
 void launch_service(Service& service)
 {
-    service.is_running = false;
     unsigned short retry = 0;
-    do
+    bool keep_running = true;
+    
+    while(keep_running)
     {
         service_log(service, "Starting...");
         auto stream = popen((service.command + " 2>&1").c_str(), "r");
@@ -132,31 +136,24 @@ void launch_service(Service& service)
 
             if(pclose(stream) != 0)
             {
+                // We increment retry value and if it exceeds our max retry value, we stop our loop
                 retry++;
-                if(retry >= service.max_retry) service.restart = false;
+                if(retry >= service.max_retry) keep_running = false;
             }
             
-            if(service.max_retry > 0) service.is_running = false;
+            if(service.restart) service.is_running = false;
         }   
-    }while(service.restart);
+    }
 
-    if(service.max_retry > 0)
+    if(service.restart)
     {
+        // We notify that we can't run the service if the service is meant to restart
         service_log(service, "Service didn't start after ", service.max_retry, " retries.");
     }    
 }
 
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#define UNIX_PATH_MAX 108
-
 bool healthcheck_run = true;
 int sock;
-struct sockaddr_un {
-    sa_family_t sun_family;               /* AF_UNIX */
-    char        sun_path[UNIX_PATH_MAX];  /* pathname */
-};
 
 void healthcheck_socket(std::vector<Service>& services)
 {
@@ -185,8 +182,6 @@ void healthcheck_socket(std::vector<Service>& services)
     }
 }
 
-#include <signal.h>
-
 void interrupt(int signal)
 {
     healthcheck_run = false;
@@ -211,7 +206,7 @@ int main(int argc, char const *argv[])
     }
 
     register_signal(SIGINT);
-    register_signal(SIGTERM);    
+    register_signal(SIGTERM);
 
     auto services = loadConfig(argv[1]);    
     std::thread healthcheck_th(healthcheck_socket, std::ref(services));
