@@ -121,7 +121,7 @@ void launch_service(Service& service)
     unsigned short retry = 0;
     bool keep_running = true;
     
-    while(keep_running)
+    do
     {
         service_log(service, "Starting...");
         auto stream = popen((service.command + " 2>&1").c_str(), "r");
@@ -144,6 +144,7 @@ void launch_service(Service& service)
             if(service.restart) service.is_running = false;
         }   
     }
+    while(keep_running && service.restart);
 
     if(service.restart)
     {
