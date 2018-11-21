@@ -134,14 +134,14 @@ void launch_service(Service& service)
                 service_log(service, read_line(stream));
             }
 
-            if(pclose(stream) != 0)
+            int status = pclose(stream);
+
+            if(service.restart)
             {
-                // We increment retry value and if it exceeds our max retry value, we stop our loop
+                service.is_running = false;
                 retry++;
                 if(retry >= service.max_retry) keep_running = false;
-            }
-            
-            if(service.restart) service.is_running = false;
+            }            
         }   
     }
     while(keep_running && service.restart);
@@ -151,6 +151,17 @@ void launch_service(Service& service)
         // We notify that we can't run the service if the service is meant to restart
         service_log(service, "Service didn't start after ", service.max_retry, " retries.");
     }    
+    else
+    {
+        if(service.is_running)
+        {
+            service_log(service, "Service executed once as expected.");
+        }
+        else
+        {
+            service_log(service, "Service didn't executed once.");
+        }
+    }
 }
 
 bool healthcheck_run = true;
@@ -158,18 +169,39 @@ int sock;
 
 void healthcheck_socket(std::vector<Service>& services)
 {
-    sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    using std::cout, std::cerr, std::endl;
+
+    if( (sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1 )
+    {
+        cerr << "Error creating socket for healthcheck" << endl;
+        return;
+    }
 
     {
         sockaddr_un addr{AF_UNIX, "/var/run/healthcheck.sock"};
-        bind(sock, (sockaddr*)&addr, sizeof(addr));
+
+        if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
+        {
+            cerr << "Error when binding unix socket" << endl;
+            return;
+        }
     }
     
-    listen(sock, 5);
+    if( listen(sock, 5) == -1 )
+    {
+        cerr << "Error when setting up the queue" << endl;
+        return;
+    }
 
     while(healthcheck_run)
     {
-        int client_sock = accept(sock, NULL, 0);
+        int client_sock;
+        if( (client_sock = accept(sock, NULL, 0)) == -1 )
+        {
+            cerr << "Error when accepting new connection" << endl;
+            healthcheck_run = false;
+            break;
+        }
 
         unsigned short count = 0;
         for(Service& service : services)
@@ -179,6 +211,7 @@ void healthcheck_socket(std::vector<Service>& services)
 
         bool is_ok = (count == services.size());
         send(client_sock, &is_ok, sizeof(is_ok), 0);
+        cout << "Sending healthcheck : " << is_ok << endl;
         close(client_sock);
     }
 }
@@ -209,7 +242,9 @@ int main(int argc, char const *argv[])
     register_signal(SIGINT);
     register_signal(SIGTERM);
 
-    auto services = loadConfig(argv[1]);    
+    auto services = loadConfig(argv[1]); 
+
+    // Launching healthcheck thread service   
     std::thread healthcheck_th(healthcheck_socket, std::ref(services));
 
     // Launching each service in a separate thread
