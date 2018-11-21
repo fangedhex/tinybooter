@@ -1,5 +1,7 @@
 # TinyBooter
 
+Note : This software is not production ready yet ! It need some rewrite and will have some bugs...
+
 TinyBooter is a small software for Docker that helps to launch and keep running services through ini files configuration. It is designed to have a small footprint as possible : currently the image size is less than 10MB (docker image based on Alpine) and memory use is less than 50KB (it depends on how many services you want to run but it doesn't change a lot !). It also contains a small healthcheck code for Docker.
 
 This image alone doesn't do anything, it serves as a base : you can add a service as an ini file inside /etc/tinybooter.d/ directory like this :
@@ -20,7 +22,3 @@ You can access the TinyBooter's official image [here](https://hub.docker.com/r/f
 At the moment, I made this small software cause I was in need of a small software that can do that simple work. If you find any bugs or have a cool idea to improve it : don't hesitate to create an issue here.
 
 Want to add something yourself ? Fork this project, add your code and do a pull request :)
-
-## Support me
-
-First of all, this project itself is too small to ask for money. But I'm linking [my patreon page](https://www.patreon.com/fangedhex) so you can see the other projects I'm working on.
