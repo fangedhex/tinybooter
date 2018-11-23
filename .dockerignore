@@ -6,6 +6,7 @@ LICENSE
 README.md
 
 # Binary
+objects
 tinybooter
 healthcheck
 *.o

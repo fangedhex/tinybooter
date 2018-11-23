@@ -1,4 +1,5 @@
 # Binary
+/objects
 /tinybooter
 /healthcheck
 *.o
