@@ -1,8 +1,6 @@
 # TinyBooter
 
-Note : This software is not production ready yet ! It need some rewrite and will have some bugs...
-
-TinyBooter is a small software for Docker that helps to launch and keep running services through ini files configuration. It is designed to have a small footprint as possible : currently the image size is less than 10MB (docker image based on Alpine) and memory use is less than 50KB (it depends on how many services you want to run but it doesn't change a lot !). It also contains a small healthcheck code for Docker.
+TinyBooter is a small software for Docker that helps to launch and keep running services through ini files configuration. It is designed to have a small footprint as possible : memory use is less than 50KB (it depends on how many services you want to run but it doesn't change a lot !). It also contains a small healthcheck code for Docker.
 
 This image alone doesn't do anything, it serves as a base : you can add a service as an ini file inside /etc/tinybooter.d/ directory like this :
 
@@ -12,8 +10,6 @@ command=command to run
 restart=true (optional, default to true)
 max_retry=5 (optional, default to 5)
 ```
-
-Note : The docker image contains tzdata so you can use the environment variable TZ to set the timezone.
 
 You can access the TinyBooter's official image [here](https://hub.docker.com/r/fangedhex/tinybooter/).
 
