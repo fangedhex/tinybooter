@@ -1,7 +1,7 @@
 CC=clang
 CCX=clang++
 
-SRC=src/ConfigLoader.cpp src/Logger.cpp src/main.cpp src/Service.cpp
+SRC=src/Kernel.cpp src/ConfigLoader.cpp src/Logger.cpp src/main.cpp src/Service.cpp src/CliService.cpp
 
 all:
 	mkdir -p objects

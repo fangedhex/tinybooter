@@ -1,8 +1,8 @@
 FROM debian:buster-slim
 LABEL maintainer="Sylvain VISTE <viste.sylvain@gmail.com>"
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential make clang
 ADD . /src/
 RUN mkdir -p /etc/tinybooter.d/ \
-&& apt-get update && apt-get install -y build-essential make clang \
 && cd /src/ \
 && make \
 && cp tinybooter /usr/bin/ \

@@ -91,11 +91,16 @@ bool Service::healthcheck()
     if(config.restart)
     {
         // When the service restarts every times it stops
-        return ((flags & ServiceFlag::RUNNING) == ServiceFlag::RUNNING);
+        return is_running();
     }
     else
     {
         // If the service needs just to run once
         return ((flags & ServiceFlag::RUNNED_ONCE) == ServiceFlag::RUNNED_ONCE);
     }
+}
+
+bool Service::is_running()
+{
+    return ((flags & ServiceFlag::RUNNING) == ServiceFlag::RUNNING); 
 }

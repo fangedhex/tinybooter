@@ -32,4 +32,5 @@ class Service
     ~Service();
     void launch();
     bool healthcheck();
+    bool is_running();
 };
