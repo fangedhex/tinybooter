@@ -3,7 +3,7 @@
 #include "ConfigLoader.hpp"
 
 Kernel::Kernel()
-: logger(std::make_shared<Logger>()), cliService(services, logger)
+: cliService(services, logger)
 {
 }
 

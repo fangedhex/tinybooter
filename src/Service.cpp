@@ -1,6 +1,6 @@
 #include "Service.hpp"
 
-Service::Service(ServiceConfig _config, std::shared_ptr<Logger> _logger)
+Service::Service(ServiceConfig _config, Logger& _logger)
 : config(_config), logger(_logger)
 {
 }
@@ -38,7 +38,7 @@ void Service::thread_func()
     
     do
     {
-        logger->log(config.name, "Starting...");
+        logger.log(config.name, "Starting...");
         auto stream = popen((config.command + " 2>&1").c_str(), "r");
 
         if(stream)
@@ -47,7 +47,7 @@ void Service::thread_func()
 
             while(!feof(stream))
             {
-                logger->log(config.name, read_line(stream));
+                logger.log(config.name, read_line(stream));
             }
 
             pclose(stream);
@@ -66,17 +66,17 @@ void Service::thread_func()
     if(config.restart)
     {
         // We notify that we can't run the service if the service is meant to restart
-        logger->log(config.name, "Service didn't start after ", config.max_retry, " retries.");
+        logger.log(config.name, "Service didn't start after ", config.max_retry, " retries.");
     }    
     else
     {
         if(flags & ServiceFlag::RUNNED_ONCE)
         {
-            logger->log(config.name, "Service executed once as expected.");
+            logger.log(config.name, "Service executed once as expected.");
         }
         else
         {
-            logger->log(config.name, "Service didn't executed once.");
+            logger.log(config.name, "Service didn't executed once.");
         }
     }
 }

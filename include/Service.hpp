@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <thread>
-#include <memory>
 
 #include "ServiceConfig.hpp"
 #include "Logger.hpp"
@@ -23,12 +22,12 @@ class Service
     ServiceConfig config;
     std::thread *thread = nullptr;    
     char flags = 0;
-    std::shared_ptr<Logger> logger;
+    Logger& logger;
 
     void thread_func();    
 
     public:
-    Service(ServiceConfig config, std::shared_ptr<Logger> logger);
+    Service(ServiceConfig config, Logger& logger);
     ~Service();
     void launch();
     bool healthcheck();

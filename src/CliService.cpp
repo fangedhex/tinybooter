@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-CliService::CliService(std::vector<Service> &_s, std::shared_ptr<Logger> _l)
+CliService::CliService(std::vector<Service> &_s, Logger& _l)
 : logger(_l), services(_s)
 {
 }
@@ -23,7 +23,7 @@ void CliService::thread_func()
 {
     if( (sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1 )
     {
-        logger->log("cli", "Error creating socket for healthcheck");
+        logger.log("cli", "Error creating socket for healthcheck");
         return;
     }
 
@@ -32,14 +32,14 @@ void CliService::thread_func()
 
         if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
         {
-            logger->log("cli", "Error when binding unix socket");
+            logger.log("cli", "Error when binding unix socket");
             return;
         }
     }
     
     if( listen(sock, 5) == -1 )
     {
-        logger->log("cli", "Error when setting up the queue");
+        logger.log("cli", "Error when setting up the queue");
         return;
     }
 
@@ -49,7 +49,7 @@ void CliService::thread_func()
         int client_sock;
         if( (client_sock = accept(sock, NULL, 0)) == -1 )
         {
-            if(keep_running) logger->log("cli", "Error when accepting new connection");
+            if(keep_running) logger.log("cli", "Error when accepting new connection");
             keep_running = false;
             break;
         }
@@ -62,7 +62,7 @@ void CliService::thread_func()
 
         bool is_ok = (count == services.size());
         send(client_sock, &is_ok, sizeof(is_ok), 0);
-        logger->log("cli", "Sending healthcheck : ", is_ok);
+        logger.log("cli", "Sending healthcheck : ", is_ok);
         close(client_sock);
     }
 }
