@@ -9,10 +9,8 @@ README.md
 objects
 tinybooter
 healthcheck
+testing
 *.o
-
-# Test
-tinybooter.d
 
 # VSCode
 .vscode

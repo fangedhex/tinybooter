@@ -1,7 +1,8 @@
-# Build environment
-FROM rhub/fedora-clang-devel AS build-env
+# Build/test environment
+FROM archlinux/base AS build-env
+RUN pacman -Sy --noconfirm clang make gtest gmock
 ADD . /src/
-RUN cd /src/ && make
+RUN cd /src/ && make test
 
 # Runtime environment
 FROM debian:buster-slim
