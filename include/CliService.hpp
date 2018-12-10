@@ -12,7 +12,7 @@
 
 class CliService
 {
-    Logger& logger;
+    ILogger& logger;
     std::vector<Service> &services;
     std::thread *th;
     int sock;
@@ -20,7 +20,7 @@ class CliService
     bool keep_running;
 
     public:
-    CliService(std::vector<Service> &services, Logger& logger);
+    CliService(std::vector<Service> &services, ILogger& logger);
     ~CliService();
     void launch();
     void kill();

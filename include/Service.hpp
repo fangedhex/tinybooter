@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "ServiceConfig.hpp"
-#include "Logger.hpp"
+#include "ILogger.hpp"
 
 enum ServiceFlag
 {
@@ -22,12 +22,12 @@ class Service
     ServiceConfig config;
     std::thread *thread = nullptr;    
     char flags = 0;
-    Logger& logger;
+    ILogger& logger;
 
     void thread_func();    
 
     public:
-    Service(ServiceConfig config, Logger& logger);
+    Service(ServiceConfig config, ILogger& logger);
     ~Service();
     void launch();
     bool healthcheck();

@@ -11,5 +11,5 @@ all:
 	$(CXX) --std=c++17 -O2 -s -Iinclude/ src/healthcheck.cpp -o healthcheck
 
 test: all
-	$(CXX) --std=c++17 -lpthread -lgtest -lgmock -O2 -s -Iinclude/ -Ilib/ objects/ini.o lib/INIReader.cpp $(TEST_SRC) -o testing
+	$(CXX) --std=c++17 -lpthread -lgtest -lgmock -O2 -s -Itests/mocks/ -Iinclude/ -Ilib/ objects/ini.o lib/INIReader.cpp $(TEST_SRC) -o testing
 	./testing

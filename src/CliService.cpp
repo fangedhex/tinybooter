@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-CliService::CliService(std::vector<Service> &_s, Logger& _l)
+CliService::CliService(std::vector<Service> &_s, ILogger& _l)
 : logger(_l), services(_s)
 {
 }

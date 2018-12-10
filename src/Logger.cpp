@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iomanip>
+#include <iostream>
 
 void Logger::log(std::string service_name, std::string str)
 {
