@@ -2,11 +2,69 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/un.h>
+#include <netinet/in.h>
 #include <unistd.h>
 
 CliService::CliService(std::vector<Service> &_s, ILogger& _l)
 : logger(_l), services(_s)
 {
+}
+
+CliService::CliService(std::string path, std::vector<Service> &_s, ILogger& _l)
+: CliService(_s, _l)
+{
+    if( (sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1 )
+    {
+        logger.log("cli", "Error creating socket for healthcheck");
+        return;
+    }
+
+    {
+        sockaddr_un addr{AF_UNIX};
+        strcpy(addr.sun_path, path.c_str());
+
+        if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
+        {
+            logger.log("cli", "Error when binding unix socket");
+            return;
+        }
+    }
+    
+    if( listen(sock, 5) == -1 )
+    {
+        logger.log("cli", "Error when setting up the queue");
+        return;
+    }
+}
+
+CliService::CliService(u_short port, std::vector<Service> &_s, ILogger& _l)
+: CliService(_s, _l)
+{
+    if( (sock = socket(AF_INET, SOCK_STREAM, 0)) == -1 )
+    {
+        logger.log("cli", "Error creating socket for healthcheck");
+        return;
+    }
+
+    {
+        sockaddr_in addr{0};
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(port);
+
+        if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
+        {
+            logger.log("cli", "Error when binding unix socket");
+            return;
+        }
+    }
+    
+    if( listen(sock, 5) == -1 )
+    {
+        logger.log("cli", "Error when setting up the queue");
+        return;
+    }
 }
 
 CliService::~CliService()
@@ -21,28 +79,6 @@ CliService::~CliService()
 
 void CliService::thread_func()
 {
-    if( (sock = socket(AF_UNIX, SOCK_STREAM, 0)) == -1 )
-    {
-        logger.log("cli", "Error creating socket for healthcheck");
-        return;
-    }
-
-    {
-        sockaddr_un addr{AF_UNIX, "/var/run/healthcheck.sock"};
-
-        if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
-        {
-            logger.log("cli", "Error when binding unix socket");
-            return;
-        }
-    }
-    
-    if( listen(sock, 5) == -1 )
-    {
-        logger.log("cli", "Error when setting up the queue");
-        return;
-    }
-
     keep_running = true;
     while(keep_running)
     {

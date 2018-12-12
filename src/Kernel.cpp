@@ -3,7 +3,7 @@
 #include "ConfigLoader.hpp"
 
 Kernel::Kernel()
-: cliService(services, logger)
+: cliService("/var/run/healthcheck.sock", services, logger)
 {
 }
 
