@@ -18,3 +18,5 @@ You can access the TinyBooter's official image [here](https://hub.docker.com/r/f
 At the moment, I made this small software cause I was in need of a small software that can do that simple work. If you find any bugs or have a cool idea to improve it : don't hesitate to create an issue/feedback here.
 
 Want to add something yourself ? Fork this project, add your code and do a pull request :)
+
+If you want to support me financially, you can do it on [Patreon](https://www.patreon.com/fangedhex)
