@@ -8,7 +8,7 @@ TEST(ServiceTest, launchOnce)
 
     ServiceConfig config{
         "test",
-        "sleep 1",
+        "sleep 0.1",
         false,
         0
     };

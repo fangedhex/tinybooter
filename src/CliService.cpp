@@ -55,7 +55,7 @@ CliService::CliService(u_short port, std::vector<Service> &_s, ILogger& _l)
 
         if( bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1 )
         {
-            logger.log("cli", "Error when binding unix socket");
+            logger.log("cli", "Error when binding tcp socket on port ", port);
             return;
         }
     }
@@ -75,6 +75,7 @@ CliService::~CliService()
         th->join();
         delete th;
     }
+    close(sock);
 }
 
 void CliService::thread_func()
