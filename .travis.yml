@@ -1,0 +1,13 @@
+language: cpp
+os: linux
+sudo: required
+dist: bionic
+install:
+  - sudo apt-get update
+  - sudo apt-get install -y --no-install-recommends build-essential cmake libgtest-dev libgmock-dev
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./main/tinybooter_test
