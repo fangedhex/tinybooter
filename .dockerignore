@@ -5,15 +5,5 @@
 LICENSE
 README.md
 
-# Binary
-objects
-tinybooter
-healthcheck
-testing
-*.o
-
-# VSCode
-.vscode
-
-# Git
-.gitignore
+# Build dir
+build

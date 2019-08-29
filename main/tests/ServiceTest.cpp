@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "LoggerMock.hpp"
+#include "mocks/LoggerMock.hpp"
 #include "Service.hpp"
 
 TEST(ServiceTest, launchOnce)
