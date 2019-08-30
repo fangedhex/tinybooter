@@ -5,7 +5,7 @@
 TEST(ConfigLoaderTest, load)
 {
     ConfigLoader loader;
-    auto configs = loader.getServicesConfigFromIni("../tinybooter.d");
+    auto configs = loader.getServicesConfigFromIni("tinybooter.d");
 
     // Check service1
     EXPECT_EQ(configs[0].name, "service1");
