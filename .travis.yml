@@ -1,6 +1,12 @@
+services: docker
 language: cpp
 os: linux
 dist: bionic
 script:
   - mkdir build && cd build && cmake .. && make && cd ..
   - ./build/main/tinybooter_test
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -t fangedhex/tinybooter:$TAG .
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+  - docker push fangedhex/tinybooter:$TAG

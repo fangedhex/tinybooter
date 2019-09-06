@@ -1,11 +1,11 @@
-# Build/test environment
+# Build environment
 FROM debian:buster-slim AS build-env
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential cmake libgtest-dev libgmock-dev
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential cmake
 ADD . /src/
 RUN mkdir -p /src/build && \
 cd /src/build && \
 cmake -DCMAKE_BUILD_TYPE=Release .. && \
-make && /src/build/main/tinybooter_test
+make
 
 # Runtime environment
 FROM debian:buster-slim
