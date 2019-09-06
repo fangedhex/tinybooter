@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ConfigLoader.hpp"
+#include "config/ConfigLoader.hpp"
 
 TEST(ConfigLoaderTest, load)
 {

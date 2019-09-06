@@ -8,7 +8,7 @@ TEST(ServiceTest, launchOnce)
 
     ServiceConfig config{
         "test",
-        "sleep 0.1",
+        "echo 'test'",
         false,
         0
     };
@@ -19,4 +19,6 @@ TEST(ServiceTest, launchOnce)
 
     Service service(config, logger);
     service.launch();
+
+    EXPECT_TRUE(service.healthcheck());
 }

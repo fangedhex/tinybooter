@@ -1,6 +1,7 @@
 #include "Kernel.hpp"
 
-#include "ConfigLoader.hpp"
+#include "config/ConfigLoader.hpp"
+#include "CliService.hpp"
 
 Kernel::Kernel()
 : cliService("/var/run/healthcheck.sock", services, logger)

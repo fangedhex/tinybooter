@@ -1,8 +1,8 @@
-#include "ConfigLoader.hpp"
+#include "config/ConfigLoader.hpp"
 
 #include <dirent.h>
 
-#include "INIReader.h"
+#include "config/INIReader.h"
 
 bool has_suffix(const std::string &str, const std::string &suffix)
 {

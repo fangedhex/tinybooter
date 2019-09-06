@@ -8,7 +8,7 @@
 #include "CliService.hpp"
 #include "mocks/LoggerMock.hpp"
 
-TEST(CliServiceTest, run)
+TEST(CliServiceTest, DISABLED_run)
 {
     ServiceConfig config{
         "test",
