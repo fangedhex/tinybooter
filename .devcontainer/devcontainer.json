@@ -1,0 +1,17 @@
+{
+  "name": "Tinybooter",
+  "remoteUser": "vscode",
+  "image": "fangedhex/devcontainers:rust",
+  "extensions": [
+    "editorconfig.editorconfig",
+    "rust-lang.rust",
+    "panicbit.cargo",
+    "serayuzgur.crates",
+    "tamasfe.even-better-toml",
+    "matklad.rust-analyzer"
+  ],
+  "settings": {
+    "rust-client.rustupPath": "/home/vscode/.cargo/bin/rustup",
+    "rust-client.engine": "rust-analyzer"
+  }
+}
