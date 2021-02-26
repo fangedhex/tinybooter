@@ -1,4 +1,4 @@
-use signal_hook::consts::signal::*;
+/*use signal_hook::consts::signal::*;
 use signal_hook::low_level;
 
 use std::io::Error;
@@ -32,5 +32,67 @@ fn main() -> Result<(), Error> {
     // After printing it, do whatever the signal was supposed to do in the first place
     low_level::emulate_default_handler(signal)?;
   }
+  Ok(())
+}*/
+
+//mod healthcheck;
+
+#![feature(proc_macro_hygiene, decl_macro)]
+
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_yaml;
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+struct TinybooterConfig {
+  healthcheck_port: u16,
+}
+
+#[macro_use]
+extern crate rocket;
+use rocket::config::{Config, Environment};
+
+extern crate clap;
+use clap::{App, Arg};
+
+#[get("/")]
+fn index() -> &'static str {
+  "Hello, world!"
+}
+
+fn read_config(configfile: &str) -> Result<TinybooterConfig, Box<dyn std::error::Error>> {
+  let f = std::fs::File::open(configfile)?;
+  let config: TinybooterConfig = serde_yaml::from_reader(f)?;
+  Ok(config)
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+  let matches = App::new("Tinybooter")
+    .version("1.0.0")
+    .author("Sylvain VISTE <viste.sylvain@protonmail.com>")
+    .about("Process launcher for Docker and Kubernetes")
+    .arg(
+      Arg::with_name("config")
+        .short("c")
+        .long("config")
+        .value_name("FILE"),
+    )
+    .get_matches();
+
+  let configfile = matches
+    .value_of("config")
+    .unwrap_or("/etc/tinybooter/tinybooter.yaml");
+  println!("Value for config: {}", configfile);
+
+  let config = read_config(configfile)?;
+
+  let rocket_config = Config::build(Environment::Staging)
+    .port(config.healthcheck_port)
+    .finalize()?;
+
+  rocket::custom(rocket_config)
+    .mount("/", routes![index])
+    .launch();
+
   Ok(())
 }

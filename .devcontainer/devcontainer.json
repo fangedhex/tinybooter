@@ -7,11 +7,9 @@
     "rust-lang.rust",
     "panicbit.cargo",
     "serayuzgur.crates",
-    "tamasfe.even-better-toml",
-    "matklad.rust-analyzer"
+    "tamasfe.even-better-toml"
   ],
   "settings": {
-    "rust-client.rustupPath": "/home/vscode/.cargo/bin/rustup",
-    "rust-client.engine": "rust-analyzer"
+    "rust-client.rustupPath": "/home/vscode/.cargo/bin/rustup"
   }
 }
