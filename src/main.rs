@@ -51,13 +51,40 @@ struct TinybooterConfig {
 #[macro_use]
 extern crate rocket;
 use rocket::config::{Config, Environment};
+use rocket::http::Status;
 
 extern crate clap;
 use clap::{App, Arg};
 
-#[get("/")]
-fn index() -> &'static str {
-  "Hello, world!"
+static ready: bool = false;
+static started: bool = true;
+static live: bool = true;
+
+#[get("/readiness")]
+fn status_readiness() -> Status {
+  if ready {
+    Status::Accepted
+  } else {
+    Status::NotAcceptable
+  }
+}
+
+#[get("/liveness")]
+fn status_liveness() -> Status {
+  if live {
+    Status::Accepted
+  } else {
+    Status::NotAcceptable
+  }
+}
+
+#[get("/startup")]
+fn status_startup() -> Status {
+  if started {
+    Status::Accepted
+  } else {
+    Status::NotAcceptable
+  }
 }
 
 fn read_config(configfile: &str) -> Result<TinybooterConfig, Box<dyn std::error::Error>> {
@@ -91,7 +118,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     .finalize()?;
 
   rocket::custom(rocket_config)
-    .mount("/", routes![index])
+    .mount(
+      "/",
+      routes![status_startup, status_liveness, status_readiness],
+    )
     .launch();
 
   Ok(())
