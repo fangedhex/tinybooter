@@ -35,18 +35,14 @@ fn main() -> Result<(), Error> {
   Ok(())
 }*/
 
-//mod healthcheck;
-
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_yaml;
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-struct TinybooterConfig {
-  healthcheck_port: u16,
-}
+//mod healthcheck;
+mod config;
 
 #[macro_use]
 extern crate rocket;
@@ -87,9 +83,9 @@ fn status_startup() -> Status {
   }
 }
 
-fn read_config(configfile: &str) -> Result<TinybooterConfig, Box<dyn std::error::Error>> {
+fn read_config(configfile: &str) -> Result<config::TinybooterConfig, Box<dyn std::error::Error>> {
   let f = std::fs::File::open(configfile)?;
-  let config: TinybooterConfig = serde_yaml::from_reader(f)?;
+  let config: config::TinybooterConfig = serde_yaml::from_reader(f)?;
   Ok(config)
 }
 
@@ -109,11 +105,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   let configfile = matches
     .value_of("config")
     .unwrap_or("/etc/tinybooter/tinybooter.yaml");
-  println!("Value for config: {}", configfile);
 
   let config = read_config(configfile)?;
 
-  let rocket_config = Config::build(Environment::Staging)
+  use glob::glob;
+  for entry in glob(&*config.pods).expect("Failed to read glob pattern") {
+    match entry {
+      Ok(path) => println!("{:?}", path.display()),
+      Err(e) => println!("{:?}", e),
+    }
+  }
+
+  /*let rocket_config = Config::build(Environment::Staging)
     .port(config.healthcheck_port)
     .finalize()?;
 
@@ -122,7 +125,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
       "/",
       routes![status_startup, status_liveness, status_readiness],
     )
-    .launch();
+    .launch();*/
 
   Ok(())
 }

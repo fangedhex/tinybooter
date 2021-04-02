@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "rust-lang.rust",
+    "panicbit.cargo",
+    "serayuzgur.crates",
+    "tamasfe.even-better-toml"
+  ],
+  "unwantedRecommendations": []
+}
