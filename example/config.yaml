@@ -1,2 +1,2 @@
 healthcheck_port: 8123
-pods: example/conf/**/*.y?ml
+jobs: example/conf/**/*.y?ml

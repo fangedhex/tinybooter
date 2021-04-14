@@ -1,0 +1,4 @@
+kind: teardown
+cmd: echo
+args:
+  - goodbye world!

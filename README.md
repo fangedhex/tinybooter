@@ -2,7 +2,7 @@
 
 ## This branch
 
-This branch is a complete rewriting of the software that will use Conan to manage libraries and also move to YAML based config files instead of INIs.
+This branch is a complete rewriting of the software that will use Rust as language. I'm trying out this language with a small piece of software. (The readme will be updated when everything is "stable")
 
 ## What is this ?
 
