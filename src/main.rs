@@ -9,6 +9,7 @@ use clap::{App, Arg};
 
 mod config;
 mod run_once;
+mod run_service;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
   // Setup CLI lib for parsing
@@ -36,6 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   run_once::run_once(&jobs, config::JobKind::Init);
 
   // Run service jobs
+  run_service::run(&jobs);
 
   // Run "cleanup" jobs
   run_once::run_once(&jobs, config::JobKind::TearDown);
