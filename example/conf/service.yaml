@@ -1,0 +1,4 @@
+kind: service
+cmd: echo
+args:
+  - hello world!

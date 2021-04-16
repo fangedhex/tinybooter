@@ -1,0 +1,4 @@
+kind: init
+cmd: echo
+args:
+  - hello world!

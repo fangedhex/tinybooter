@@ -1,0 +1,2 @@
+healthcheck_port: 8123
+jobs: example/conf/**/*.y?ml
