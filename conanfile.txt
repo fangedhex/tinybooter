@@ -1,9 +1,0 @@
-[requires]
-spdlog/[>=1.4.1]
-fmt/7.1.3
-
-[options]
-spdlog:header_only=True
-
-[generators]
-cmake

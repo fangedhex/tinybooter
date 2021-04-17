@@ -1,8 +1,8 @@
-build: conan cmake
+build: cmake
 	cd build && make
 
-conan: conanfile.txt
-	conan install -if build --build=missing .
+#conan: conanfile.txt
+#	conan install -if build . --build
 
 cmake: CMakeLists.txt
 	cmake -G "Unix Makefiles" -S . -B build
