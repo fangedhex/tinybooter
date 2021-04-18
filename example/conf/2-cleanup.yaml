@@ -1,4 +1,4 @@
-kind: teardown
+kind: cleanup
 cmd: echo
 args:
   - goodbye world!

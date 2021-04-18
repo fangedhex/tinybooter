@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.1.2)
-project(tinybooter)
+project(
+  tinybooter
+  VERSION 1.0.0
+  LANGUAGES CXX
+)
+
+# System to avoid building inside our source directory
+if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
+  message(
+    FATAL_ERROR
+      "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+  )
+endif()
 
 ### ### ### ### ###
 # CONAN SETUP
@@ -29,11 +41,14 @@ conan_cmake_run(
 # PROJECT SETUP
 ### ### ### ### ###
 
-add_executable(${PROJECT_NAME} src/main.cpp include/Config.h)
+file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+
+add_executable(${PROJECT_NAME} ${headers} ${sources})
 set_target_properties(${PROJECT_NAME} PROPERTIES
-  CXX_STANDARD 11
+  CXX_STANDARD 17
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PRIVATE "include")
 target_link_libraries(${PROJECT_NAME} CONAN_PKG::spdlog CONAN_PKG::yaml-cpp)
