@@ -1,29 +1,25 @@
-#include <fmt/core.h>
-#include <spdlog/spdlog.h>
-#include <yaml-cpp/yaml.h>
-#include <util/glob.h>
-#include <SystemConfig.h>
-#include <JobConfig.h>
+#include <App.h>
+#include <signal.h>
+#include <functional>
 
-int main(int argc, char const *argv[])
+// Very nice :shitty: code but required to work with signal handling to a class
+std::function<void(int)> signalCallback;
+void signalHandler(int signal)
 {
-  spdlog::set_level(spdlog::level::debug);
+  signalCallback(signal);
+}
 
-  YAML::Node node = YAML::LoadFile("example/config.yaml");
-  SystemConfig cfg = node.as<SystemConfig>();
+int main(int argc, char **argv)
+{
+  App app;
 
-  spdlog::debug("Port = {}", cfg.healthcheck_port);
-  spdlog::debug("Jobs glob = {}", cfg.jobs);
+  signalCallback = std::bind(&App::signalHandler, &app, std::placeholders::_1);
 
-  for (auto &p : glob::rglob(cfg.jobs))
-  {
-    spdlog::debug("File = {}", p.string());
+  // Registers signals handling to our main class
+  signal(SIGINT, &signalHandler);
+  signal(SIGTERM, &signalHandler);
 
-    YAML::Node job_node = YAML::LoadFile(p);
-    JobConfig job_cfg = job_node.as<JobConfig>();
+  app.parseArgs(argc, argv);
 
-    spdlog::debug("kind = {}", ToString(job_cfg.kind));
-  }
-
-  return 0;
+  return EXIT_SUCCESS;
 }

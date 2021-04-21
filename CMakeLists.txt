@@ -31,6 +31,7 @@ conan_cmake_run(
   libyaml/0.2.5
   yaml-cpp/0.6.3
   spdlog/[>=1.4.1]
+  cli11/1.9.1
   GENERATORS cmake
   BASIC_SETUP CMAKE_TARGETS
   BUILD missing
@@ -51,4 +52,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_EXTENSIONS OFF
 )
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
-target_link_libraries(${PROJECT_NAME} CONAN_PKG::spdlog CONAN_PKG::yaml-cpp)
+target_link_libraries(${PROJECT_NAME} CONAN_PKG::cli11 CONAN_PKG::spdlog CONAN_PKG::yaml-cpp)
