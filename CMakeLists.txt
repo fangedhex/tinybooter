@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.1.2)
+cmake_minimum_required(VERSION 3.14)
 project(
   tinybooter
   VERSION 1.0.0
-  LANGUAGES CXX
 )
 
 # System to avoid building inside our source directory
@@ -39,6 +38,19 @@ conan_cmake_run(
 )
 
 ### ### ### ### ###
+# LIBS WITH FETCHCONTENT
+### ### ### ### ###
+include(FetchContent)
+
+set(REPROC++ ON)
+FetchContent_Declare(
+  reproc
+  GIT_REPOSITORY  https://github.com/DaanDeMeyer/reproc.git
+  GIT_TAG         v14.2.2
+)
+FetchContent_MakeAvailable(reproc)
+
+### ### ### ### ###
 # PROJECT SETUP
 ### ### ### ### ###
 
@@ -52,4 +64,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_EXTENSIONS OFF
 )
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
-target_link_libraries(${PROJECT_NAME} CONAN_PKG::cli11 CONAN_PKG::spdlog CONAN_PKG::yaml-cpp)
+target_link_libraries(
+  ${PROJECT_NAME}
+  CONAN_PKG::cli11
+  CONAN_PKG::spdlog
+  CONAN_PKG::yaml-cpp
+  reproc++
+)

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <memory>
-#include <SystemConfig.h>
-#include <JobConfig.h>
 #include <vector>
+
+#include <config/SystemConfig.h>
+#include <config/JobConfig.h>
 
 enum AppState
 {
@@ -16,10 +17,13 @@ class App
 {
 public:
   void signalHandler(int signal);
+
   void parseArgs(int argc, char **argv);
+  void runOnce(JobKind kind);
+  void daemon();
 
 private:
   SystemConfig systemConfig;
-  std::vector<JobConfig> jobsConfig;
+  std::vector<YAML::Node> jobsConfig;
   AppState currentState;
 };

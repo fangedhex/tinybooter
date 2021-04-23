@@ -7,7 +7,9 @@
 #include <CLI/Config.hpp>
 #include <yaml-cpp/yaml.h>
 #include <util/glob.h>
-#include <Monitor.h>
+#include <config/RunOnceJobConfig.h>
+#include <SyncProcess.h>
+#include <exception>
 
 void App::signalHandler(int signal)
 {
@@ -19,6 +21,8 @@ void App::signalHandler(int signal)
   {
     spdlog::info("SIGINT received. Quitting...");
   }
+
+  // TODO Code stuff to stop current running jobs
 
   exit(0);
 }
@@ -45,11 +49,28 @@ void App::parseArgs(int argc, char **argv)
   YAML::Node node = YAML::LoadFile(configFilePath);
   this->systemConfig = node.as<SystemConfig>();
 
-  Monitor monitor(this->systemConfig.healthcheck_port);
+  //Monitor monitor(this->systemConfig.healthcheck_port);
 
   for (auto &p : glob::rglob(this->systemConfig.jobs))
   {
-    YAML::Node job_node = YAML::LoadFile(p);
-    this->jobsConfig.push_back(node.as<JobConfig>());
+    this->jobsConfig.push_back(YAML::LoadFile(p));
+  }
+}
+
+void App::runOnce(JobKind kind)
+{
+  for (auto &jobYaml : this->jobsConfig)
+  {
+    auto tmp = jobYaml.as<JobConfig>();
+    if (tmp.kind != kind)
+      continue;
+
+    auto job = jobYaml.as<RunOnceJobConfig>();
+
+    SyncProcess process(job.cmd, job.args);
+    if (!process.run())
+    {
+      throw new std::runtime_error("Init process didn't run");
+    }
   }
 }

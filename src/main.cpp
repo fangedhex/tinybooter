@@ -20,6 +20,8 @@ int main(int argc, char **argv)
   signal(SIGTERM, &signalHandler);
 
   app.parseArgs(argc, argv);
+  app.runOnce(JobKind::INIT);
+  app.runOnce(JobKind::CLEANUP);
 
   return EXIT_SUCCESS;
 }

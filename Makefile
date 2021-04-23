@@ -5,7 +5,7 @@ build: cmake
 #	conan install -if build . --build
 
 cmake: CMakeLists.txt
-	cmake -G "Unix Makefiles" -S . -B build
+	cmake -G "Unix Makefiles" -S . -B build -DCMAKE_BUILD_TYPE=Debug
 
 clean:
 	rm -rf build
