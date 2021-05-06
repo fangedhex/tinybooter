@@ -1,3 +1,5 @@
+#pragma once
+
 #include <yaml-cpp/yaml.h>
 
 inline const YAML::Node &cnode(const YAML::Node &n)

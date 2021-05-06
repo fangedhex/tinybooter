@@ -9,6 +9,8 @@
 #include <util/glob.h>
 #include <config/RunOnceJobConfig.h>
 #include <SyncProcess.h>
+#include <config/DaemonConfig.h>
+#include <AsyncProcess.h>
 #include <exception>
 
 void App::signalHandler(int signal)
@@ -46,6 +48,7 @@ void App::parseArgs(int argc, char **argv)
   app.parse(argc, argv);
 
   // Load configurations from the filesystem
+  spdlog::debug("Loading global configuration from {} ...", configFilePath);
   YAML::Node node = YAML::LoadFile(configFilePath);
   this->systemConfig = node.as<SystemConfig>();
 
@@ -53,12 +56,14 @@ void App::parseArgs(int argc, char **argv)
 
   for (auto &p : glob::rglob(this->systemConfig.jobs))
   {
+    spdlog::debug("Loading job config from {} ...", p.c_str());
     this->jobsConfig.push_back(YAML::LoadFile(p));
   }
 }
 
 void App::runOnce(JobKind kind)
 {
+  spdlog::debug("Launching jobs with type {} ...", ToString(kind));
   for (auto &jobYaml : this->jobsConfig)
   {
     auto tmp = jobYaml.as<JobConfig>();
@@ -70,7 +75,26 @@ void App::runOnce(JobKind kind)
     SyncProcess process(job.cmd, job.args);
     if (!process.run())
     {
-      throw new std::runtime_error("Init process didn't run");
+      spdlog::error("Process didn't run");
+    }
+  }
+}
+
+void App::daemon()
+{
+  spdlog::debug("Launching deamon jobs ...");
+  for (auto &jobYaml : this->jobsConfig)
+  {
+    auto tmp = jobYaml.as<JobConfig>();
+    if (tmp.kind != JobKind::SERVICE)
+      continue;
+
+    auto job = jobYaml.as<DaemonConfig>();
+
+    AsyncProcess process(job.cmd, job.args);
+    if (!process.run())
+    {
+      spdlog::error("Process didn't run");
     }
   }
 }

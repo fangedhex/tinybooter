@@ -63,6 +63,11 @@
     "streambuf": "cpp",
     "thread": "cpp",
     "typeinfo": "cpp",
-    "csignal": "cpp"
+    "csignal": "cpp",
+    "future": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "ranges": "cpp",
+    "stop_token": "cpp"
   }
 }

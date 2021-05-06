@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 
   app.parseArgs(argc, argv);
   app.runOnce(JobKind::INIT);
+  app.daemon();
   app.runOnce(JobKind::CLEANUP);
 
   return EXIT_SUCCESS;
