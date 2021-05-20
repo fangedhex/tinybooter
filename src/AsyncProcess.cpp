@@ -5,6 +5,8 @@
 #include <mutex>
 #include <reproc++/drain.hpp>
 #include <spdlog/spdlog.h>
+#include <util/line_sink.h>
+#include <thread>
 
 AsyncProcess::AsyncProcess(std::string _cmd, std::vector<std::string> _args)
 {
@@ -43,21 +45,17 @@ bool AsyncProcess::run()
 
   // TODO It's NOT final as it needs to handle multi line and also stop from spamming console
   std::thread logThread([this]() {
+    using namespace std::chrono_literals;
+
     std::string output;
-    reproc::sink::string sink(output);
+    //reproc::sink::string sink(output);
+    line_sink sink(argv[0]);
     std::error_code ec;
 
     do
     {
-      ec = reproc::drain(process, sink, reproc::sink::null);
-      if (!ec)
-      {
-        spdlog::info("LOG : {}", output);
-      }
-      else
-      {
-        fail(ec);
-      }
+      reproc::drain(process, sink, reproc::sink::null);
+      std::this_thread::sleep_for(400ms);
     } while (this->isRunning);
   });
 
