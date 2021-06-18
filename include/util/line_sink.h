@@ -26,7 +26,7 @@ public:
       }
       else
       {
-        spdlog::info("[{}] {}", module, str);
+        spdlog::info("[\033[91m{}\033[0m] {}", module, str);
         str = "";
       }
     }

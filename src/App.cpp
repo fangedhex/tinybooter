@@ -8,9 +8,8 @@
 #include <yaml-cpp/yaml.h>
 #include <util/glob.h>
 #include <config/RunOnceJobConfig.h>
-#include <SyncProcess.h>
 #include <config/DaemonConfig.h>
-#include <AsyncProcess.h>
+#include <ChildProcess.h>
 #include <exception>
 
 void App::signalHandler(int signal)
@@ -72,7 +71,7 @@ void App::runOnce(JobKind kind)
 
     auto job = jobYaml.as<RunOnceJobConfig>();
 
-    SyncProcess process(job.cmd, job.args);
+    ChildProcess process(job.cmd, job.args);
     if (!process.run())
     {
       spdlog::error("Process didn't run");
@@ -91,7 +90,7 @@ void App::daemon()
 
     auto job = jobYaml.as<DaemonConfig>();
 
-    AsyncProcess process(job.cmd, job.args);
+    ChildProcess process(job.cmd, job.args);
     if (!process.run())
     {
       spdlog::error("Process didn't run");

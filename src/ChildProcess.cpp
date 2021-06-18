@@ -1,4 +1,4 @@
-#include <AsyncProcess.h>
+#include <ChildProcess.h>
 
 #include <future>
 #include <iostream>
@@ -8,13 +8,13 @@
 #include <util/line_sink.h>
 #include <thread>
 
-AsyncProcess::AsyncProcess(std::string _cmd, std::vector<std::string> _args)
+ChildProcess::ChildProcess(std::string _cmd, std::vector<std::string> _args)
 {
   this->argv.push_back(_cmd);
   this->argv.insert(this->argv.end(), _args.begin(), _args.end());
 }
 
-AsyncProcess::~AsyncProcess()
+ChildProcess::~ChildProcess()
 {
   this->stop();
 }
@@ -25,7 +25,7 @@ static int fail(std::error_code ec)
   return ec.value();
 }
 
-bool AsyncProcess::run()
+bool ChildProcess::run()
 {
   reproc::options options;
 
@@ -73,7 +73,12 @@ bool AsyncProcess::run()
   return true;
 }
 
-int AsyncProcess::stop()
+std::future<bool> ChildProcess::runAsync() {
+  auto func = std::bind(&ChildProcess::run, this);
+  return std::async(std::launch::async, func);
+}
+
+int ChildProcess::stop()
 {
   reproc::stop_actions stop = {
       {reproc::stop::terminate, reproc::milliseconds(5000)},

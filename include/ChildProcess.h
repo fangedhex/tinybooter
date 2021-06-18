@@ -2,15 +2,18 @@
 
 #include <string>
 #include <vector>
+#include <future>
 #include <reproc++/reproc.hpp>
 
-class AsyncProcess
+class ChildProcess
 {
 public:
-  AsyncProcess(std::string cmd, std::vector<std::string> args);
-  ~AsyncProcess();
+  ChildProcess(std::string cmd, std::vector<std::string> args);
+  ~ChildProcess();
 
   bool run();
+  std::future<bool> runAsync();
+
   int stop();
 
 private:
