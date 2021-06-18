@@ -56,7 +56,15 @@ void App::parseArgs(int argc, char **argv)
   for (auto &p : glob::rglob(this->systemConfig.jobs))
   {
     spdlog::debug("Loading job config from {} ...", p.c_str());
-    this->jobsConfig.push_back(YAML::LoadFile(p));
+
+    auto yaml = YAML::LoadFile(p);
+
+    if (!yaml["name"].IsDefined()) {
+      // If name is not defined, we set the name to the filename
+      yaml["name"] = p.stem().generic_string();
+    }
+
+    this->jobsConfig.push_back(yaml);
   }
 }
 
@@ -72,6 +80,7 @@ void App::runOnce(JobKind kind)
     auto job = jobYaml.as<RunOnceJobConfig>();
 
     ChildProcess process(job.cmd, job.args);
+    process.setSync(line_sink(job.name));
     if (!process.run())
     {
       spdlog::error("Process didn't run");
@@ -91,6 +100,7 @@ void App::daemon()
     auto job = jobYaml.as<DaemonConfig>();
 
     ChildProcess process(job.cmd, job.args);
+    process.setSync(line_sink(job.name));
     if (!process.run())
     {
       spdlog::error("Process didn't run");

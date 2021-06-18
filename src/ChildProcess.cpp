@@ -5,10 +5,11 @@
 #include <mutex>
 #include <reproc++/drain.hpp>
 #include <spdlog/spdlog.h>
-#include <util/line_sink.h>
 #include <thread>
+#include <algorithm>
 
 ChildProcess::ChildProcess(std::string _cmd, std::vector<std::string> _args)
+: sink(_cmd)
 {
   this->argv.push_back(_cmd);
   this->argv.insert(this->argv.end(), _args.begin(), _args.end());
@@ -17,6 +18,11 @@ ChildProcess::ChildProcess(std::string _cmd, std::vector<std::string> _args)
 ChildProcess::~ChildProcess()
 {
   this->stop();
+}
+
+void ChildProcess::setSync(line_sink s)
+{
+  this->sink = s;
 }
 
 static int fail(std::error_code ec)
@@ -43,18 +49,15 @@ bool ChildProcess::run()
 
   this->isRunning = true;
 
-  // TODO It's NOT final as it needs to handle multi line and also stop from spamming console
   std::thread logThread([this]() {
     using namespace std::chrono_literals;
 
     std::string output;
-    //reproc::sink::string sink(output);
-    line_sink sink(argv[0]);
     std::error_code ec;
 
     do
     {
-      reproc::drain(process, sink, reproc::sink::null);
+      reproc::drain(process, this->sink, reproc::sink::null);
       std::this_thread::sleep_for(400ms);
     } while (this->isRunning);
   });

@@ -29,6 +29,7 @@ inline const char *ToString(JobKind v)
 struct JobConfig
 {
   JobKind kind;
+  std::string name;
   std::string cmd;
   std::vector<std::string> args;
 };
@@ -87,6 +88,7 @@ namespace YAML
       Node node;
 
       node["kind"] = rhs.kind;
+      node["name"] = rhs.name;
       node["cmd"] = rhs.cmd;
       node["args"] = rhs.args;
 
@@ -101,6 +103,7 @@ namespace YAML
       }
 
       rhs.kind = node["kind"].as<JobKind>();
+      rhs.name = node["name"].as<std::string>();
       rhs.cmd = node["cmd"].as<std::string>();
 
       if (!node["args"].IsSequence())
