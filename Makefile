@@ -1,11 +1,13 @@
 build: cmake
 	cd build && make
 
-#conan: conanfile.txt
-#	conan install -if build . --build
+test: cmake build
+	./build/test/tinybooter_test
 
 cmake: CMakeLists.txt
-	cmake -G "Unix Makefiles" -S . -B build -DCMAKE_BUILD_TYPE=Debug
+	cmake -G "Unix Makefiles" -B build -DCMAKE_BUILD_TYPE=Debug
 
 clean:
 	rm -rf build
+
+.PHONY: build test cmake clean

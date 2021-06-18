@@ -30,8 +30,15 @@ include(${LIBS_DIR}/httplib.cmake)
 
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+list(FILTER sources EXCLUDE REGEX "src/main.cpp")
 
-add_executable(${PROJECT_NAME} ${headers} ${sources})
+add_executable(
+  ${PROJECT_NAME}
+  ${headers}
+  ${sources}
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
+)
+set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 1)
 set_target_properties(${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 17
   CXX_STANDARD_REQUIRED ON
@@ -47,3 +54,9 @@ target_link_libraries(
   reproc++
   httplib
 )
+
+### ### ### ### ###
+# TESTS
+### ### ### ### ###
+
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test")
