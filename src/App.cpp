@@ -11,6 +11,7 @@
 #include <config/DaemonConfig.h>
 #include <ChildProcess.h>
 #include <exception>
+#include <algorithm>
 
 void App::signalHandler(int signal)
 {
@@ -36,10 +37,14 @@ void App::signalHandler(int signal)
  */
 void App::parseArgs(int argc, char **argv)
 {
-  spdlog::set_level(spdlog::level::debug);
-
   // Parse cli arguments with Cli11
   CLI::App app{"CHANGEME"};
+
+  // Verbosity
+  app.add_flag_function("-v", [](int64_t count) {
+    auto value = std::max((int64_t)(2 - count), (int64_t)(0));
+    spdlog::set_level(static_cast<spdlog::level::level_enum>(value));
+  }, "Verbosity");
 
   std::string configFilePath = "/etc/tinybooter/config.yml";
   app.add_option("-c,--config-file", configFilePath, "Config file to use");
