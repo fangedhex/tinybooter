@@ -2,7 +2,7 @@
 
 #include <sys/types.h>
 #include <map>
-#include <lib/httplib.h>
+#include <httplib.h>
 
 enum JobStatus
 {
