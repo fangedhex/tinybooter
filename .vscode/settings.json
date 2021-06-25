@@ -69,5 +69,6 @@
     "concepts": "cpp",
     "ranges": "cpp",
     "stop_token": "cpp"
-  }
+  },
+  "files.defaultLanguage": "cpp"
 }

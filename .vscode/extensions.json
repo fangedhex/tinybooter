@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "EditorConfig.EditorConfig",
+    "ms-vscode.cmake-tools",
+    "twxs.cmake",
+    "ms-vscode.cpptools",
+    "jeff-hykin.better-cpp-syntax",
+    "hbenl.vscode-test-explorer",
+    "matepek.vscode-catch2-test-adapter"
+  ]
+}

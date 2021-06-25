@@ -1,23 +1,25 @@
 #pragma once
 
-#include <string>
-#include <vector>
 #include <future>
 #include <reproc++/reproc.hpp>
+#include <string>
 #include <util/line_sink.h>
+#include <vector>
 
-class ChildProcess
-{
+class ChildProcess {
 public:
   ChildProcess(std::string cmd, std::vector<std::string> args);
-  ~ChildProcess();
+  virtual ~ChildProcess();
 
   void setSync(line_sink s);
 
-  bool run();
-  std::future<bool> runAsync();
+  virtual bool run();
+  virtual std::future<bool> runAsync();
 
-  int stop();
+  virtual int stop();
+
+protected:
+  ChildProcess() : sink("no-name"){};
 
 private:
   std::vector<std::string> argv;

@@ -1,5 +1,9 @@
 include(FetchContent)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(GTEST_LANG_CXX11 1)
+endif()
+
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY  https://github.com/google/googletest.git

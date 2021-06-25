@@ -11,52 +11,8 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
       "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
   )
 endif()
-
-### ### ### ### ###
-# REQUIRED LIBRARIES SETUP
-### ### ### ### ###
-
 set(LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs")
-include(${LIBS_DIR}/cli11.cmake)
-include(${LIBS_DIR}/spdlog.cmake)
-include(${LIBS_DIR}/glob.cmake)
-include(${LIBS_DIR}/yaml-cpp.cmake)
-include(${LIBS_DIR}/reproc.cmake)
-include(${LIBS_DIR}/httplib.cmake)
 
-### ### ### ### ###
-# PROJECT SETUP
-### ### ### ### ###
-
-file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
-file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-list(FILTER sources EXCLUDE REGEX "src/main.cpp")
-
-add_executable(
-  ${PROJECT_NAME}
-  ${headers}
-  ${sources}
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
-)
-set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 1)
-set_target_properties(${PROJECT_NAME} PROPERTIES
-  CXX_STANDARD 17
-  CXX_STANDARD_REQUIRED ON
-  CXX_EXTENSIONS OFF
-)
-target_include_directories(${PROJECT_NAME} PRIVATE "include")
-target_link_libraries(
-  ${PROJECT_NAME}
-  CLI11
-  spdlog
-  Glob
-  yaml-cpp
-  reproc++
-  httplib
-)
-
-### ### ### ### ###
-# TESTS
-### ### ### ### ###
-
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test")
+add_subdirectory(core)
+add_subdirectory(main)
+add_subdirectory(test)
