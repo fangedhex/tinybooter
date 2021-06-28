@@ -68,7 +68,14 @@
     "compare": "cpp",
     "concepts": "cpp",
     "ranges": "cpp",
-    "stop_token": "cpp"
+    "stop_token": "cpp",
+    "any": "cpp",
+    "hash_map": "cpp",
+    "hash_set": "cpp",
+    "forward_list": "cpp",
+    "unordered_set": "cpp",
+    "cinttypes": "cpp",
+    "variant": "cpp"
   },
   "files.defaultLanguage": "cpp"
 }

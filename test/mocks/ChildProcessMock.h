@@ -4,7 +4,5 @@
 class ChildProcessMock : public ChildProcess {
 public:
   MOCK_METHOD(bool, run, (), (override));
-  MOCK_METHOD(std::future<bool>, runAsync, (), (override));
-
   MOCK_METHOD(int, stop, (), (override));
 };

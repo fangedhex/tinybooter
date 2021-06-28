@@ -14,8 +14,6 @@ public:
   void setSync(line_sink s);
 
   virtual bool run();
-  virtual std::future<bool> runAsync();
-
   virtual int stop();
 
 protected:
