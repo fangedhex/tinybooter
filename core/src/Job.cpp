@@ -5,6 +5,9 @@ Job::Job(JobConfig *config, ChildProcessFactory childProcessFactory)
   this->childProcess = childProcessFactory(config->cmd, config->args);
 }
 
+Job::Job()
+    : state(IDLE), config(nullptr), thread(nullptr), childProcess(nullptr) {}
+
 Job::~Job() {
   keepRunning = false;
 
@@ -27,7 +30,7 @@ void Job::internalRun() {
 
     if (keepRunning && config->kind == JobKind::SERVICE) {
       using namespace std::chrono_literals;
-      spdlog::info("Job {} exited ! Restarting it in 3 seconds");
+      spdlog::info("Job {} exited ! Restarting it in 3 seconds", config->name);
       std::this_thread::sleep_for(3000ms);
     }
   } while (keepRunning && config->kind == JobKind::SERVICE);

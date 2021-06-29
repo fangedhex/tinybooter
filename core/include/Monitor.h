@@ -1,24 +1,22 @@
 #pragma once
 
-#include <sys/types.h>
-#include <map>
+#include <Job.h>
 #include <httplib.h>
+#include <map>
+#include <sys/types.h>
+#include <thread>
+#include <vector>
 
-enum JobStatus
-{
-  STARTED,
-  RUNNING,
-  EXITED
-};
-
-class Monitor
-{
+class Monitor {
 public:
-  Monitor(u_short port);
-  void updateJobStatus(u_short jobId, JobStatus newStatus);
+  Monitor(u_short port, std::vector<Job *> jobs);
+  ~Monitor();
+
+  void stop();
 
 private:
-  std::map<u_short, JobStatus> jobStatus;
+  std::thread *thread;
+  std::vector<Job *> jobs;
   httplib::Server svr;
 
   void startup(const httplib::Request &req, httplib::Response &res);

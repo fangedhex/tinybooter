@@ -16,12 +16,13 @@ public:
   Job(JobConfig *config, ChildProcessFactory childProcessFactory);
   ~Job();
 
-  void launch();
-  void stop();
-  void wait();
-  JobState getState() const;
+  virtual void launch();
+  virtual void stop();
+  virtual void wait();
+  virtual JobState getState() const;
 
 protected:
+  Job();
   void internalRun();
 
 private:
