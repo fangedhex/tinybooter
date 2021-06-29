@@ -1,7 +1,7 @@
 file(GLOB_RECURSE test_headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mocks/*.h")
 file(GLOB_RECURSE test_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-include(${LIBS_DIR}/googletest.cmake)
+CPMAddPackage("gh:google/googletest@1.11.0#release-1.11.0")
 
 enable_testing()
 

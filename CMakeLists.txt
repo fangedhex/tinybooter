@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(
   tinybooter
   VERSION 1.0.0
 )
+
+include(cmake/CPM.cmake)
 
 # System to avoid building inside our source directory
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
