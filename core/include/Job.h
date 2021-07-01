@@ -19,6 +19,8 @@ public:
   virtual void launch();
   virtual void stop();
   virtual void wait();
+
+  virtual JobConfig getConfig() const;
   virtual JobState getState() const;
 
 protected:

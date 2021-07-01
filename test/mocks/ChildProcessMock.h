@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ChildProcess.h>
 #include <gmock/gmock.h>
 

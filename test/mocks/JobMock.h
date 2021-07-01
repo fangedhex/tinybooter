@@ -8,5 +8,6 @@ public:
   MOCK_METHOD(void, launch, (), (override));
   MOCK_METHOD(void, stop, (), (override));
   MOCK_METHOD(void, wait, (), (override));
+  MOCK_METHOD(JobConfig, getConfig, (), (override, const));
   MOCK_METHOD(JobState, getState, (), (override, const));
 };

@@ -47,6 +47,8 @@ void Job::launch() {
 
 JobState Job::getState() const { return state; }
 
+JobConfig Job::getConfig() const { return *config; }
+
 void Job::stop() { keepRunning = false; }
 
 void Job::wait() {
