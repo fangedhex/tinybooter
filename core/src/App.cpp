@@ -13,16 +13,18 @@
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
-void App::signalHandler(int signal) {
+void App::signalHandler(int signal, std::function<void(int)> exitCallback) {
   if (signal == SIGTERM) {
     spdlog::info("SIGTERM received. Quitting...");
   } else {
     spdlog::info("SIGINT received. Quitting...");
   }
 
-  // TODO Code stuff to stop current running jobs
+  for(auto job : getJobs()) {
+    job->stop();
+  }
 
-  exit(0);
+  exitCallback(EXIT_SUCCESS);
 }
 
 /**
@@ -107,3 +109,5 @@ void App::daemon() {
 AppState App::getState() { return state; }
 
 std::vector<Job *> App::getJobs() { return jobs; }
+
+void App::addJob(Job *job) { jobs.push_back(job); }

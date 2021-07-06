@@ -13,7 +13,9 @@ int main(int argc, char **argv)
 {
   App app;
 
-  signalCallback = std::bind(&App::signalHandler, &app, std::placeholders::_1);
+  signalCallback = std::bind(&App::signalHandler, &app, std::placeholders::_1, [](int status) {
+    exit(status);
+  });
 
   // Registers signals handling to our main class
   signal(SIGINT, &signalHandler);
