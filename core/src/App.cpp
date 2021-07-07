@@ -59,9 +59,9 @@ void App::parseArgs(int argc, char **argv) {
   // Monitor monitor(this->systemConfig.healthcheck_port);
 
   for (auto &p : glob::rglob(this->systemConfig.jobs)) {
-    spdlog::debug("Loading job config from {} ...", p.c_str());
+    spdlog::debug("Loading job config from {} ...", p.generic_string());
 
-    auto yaml = YAML::LoadFile(p);
+    auto yaml = YAML::LoadFile(p.generic_string());
 
     if (!yaml["name"].IsDefined()) {
       // If name is not defined, we set the name to the filename

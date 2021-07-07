@@ -5,7 +5,7 @@
 
 struct RunOnceJobConfig : public JobConfig
 {
-  u_int32_t timeout = -1;
+  uint32_t timeout = -1;
 };
 
 namespace YAML
@@ -36,7 +36,7 @@ namespace YAML
       YAML::convert<JobConfig>::decode(node, rhs);
 
       if (node["timeout"].IsDefined())
-        rhs.timeout = node["timeout"].as<u_int32_t>();
+        rhs.timeout = node["timeout"].as<uint32_t>();
 
       return true;
     }

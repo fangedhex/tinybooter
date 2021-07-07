@@ -5,7 +5,7 @@
 
 struct SystemConfig
 {
-  u_short healthcheck_port = 8123;
+  unsigned short healthcheck_port = 8123;
   std::string jobs;
 };
 
@@ -29,7 +29,7 @@ namespace YAML
         return false;
       }
 
-      rhs.healthcheck_port = node["healthcheck_port"].as<u_short>();
+      rhs.healthcheck_port = node["healthcheck_port"].as<unsigned short>();
       rhs.jobs = node["jobs"].as<std::string>();
       return true;
     }

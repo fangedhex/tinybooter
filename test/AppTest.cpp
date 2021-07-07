@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <App.h>
 #include <JobMock.h>
+#include <csignal>
 
 TEST(App, ShouldStopJobs) {
   JobMock job;
