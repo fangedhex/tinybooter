@@ -1,0 +1,10 @@
+.git
+.github
+.vscode
+build
+example
+.editorconfig
+.gitignore
+LICENSE
+Makefile
+README.md
