@@ -6,11 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image:
-          - prefix: debian
-            dockerfile: Dockerfile
-          - prefix: alpine
-            dockerfile: Dockerfile.alpine
+        distribution:
+          - alpine
+          - debian
+          - ubuntu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -33,9 +32,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ${{ matrix.image.dockerfile }}
+          file: Dockerfile.${{ matrix.distribution }}
           platforms: linux/amd64,linux/arm64,linux/arm
           push: true
           tags: |
-            ${{ github.repository }}:${{ matrix.image.prefix }}-next
-            ghcr.io/${{ github.repository }}:${{ matrix.image.prefix }}-next
+            ${{ github.repository }}:${{ matrix.distribution }}-next
+            ghcr.io/${{ github.repository }}:${{ matrix.distribution }}-next
