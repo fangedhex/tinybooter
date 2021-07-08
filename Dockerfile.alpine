@@ -1,0 +1,8 @@
+FROM alpine AS builder
+WORKDIR /src
+ADD . .
+RUN apk add --no-cache build-base cmake ninja git \
+&& cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+&& cd build && ninja
+FROM alpine
+COPY --from=builder /src/build/main/tinybooter /usr/bin/tinybooter

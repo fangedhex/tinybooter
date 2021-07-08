@@ -4,6 +4,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - prefix: debian
+            dockerfile: Dockerfile
+          - prefix: alpine
+            dockerfile: Dockerfile.alpine
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -25,7 +32,10 @@ jobs:
       - name: Build image and push
         uses: docker/build-push-action@v2
         with:
+          context: .
+          file: ${{ matrix.image.dockerfile }}
+          platforms: linux/amd64,linux/arm64,linux/arm
           push: true
           tags: |
-            ${{ github.repository }}:next
-            ghcr.io/${{ github.repository }}:next
+            ${{ github.repository }}:${{ matrix.image.prefix }}-next
+            ghcr.io/${{ github.repository }}:${{ matrix.image.prefix }}-next
