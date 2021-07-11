@@ -15,7 +15,15 @@
 
 App::~App()
 {
-  delete state, systemConfig, monitor;
+  if (state != nullptr)
+    delete state;
+
+  if (systemConfig != nullptr)
+    delete systemConfig;
+
+  if (monitor != nullptr)
+    delete monitor;
+
   for (auto job : this->initJobs)
   {
     delete job;

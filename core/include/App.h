@@ -17,7 +17,7 @@ enum AppState
 class App
 {
 public:
-  ~App();
+  virtual ~App();
 
   /// @brief Called by main function
   bool run(int argc, char **argv);
