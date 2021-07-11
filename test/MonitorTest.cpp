@@ -20,7 +20,7 @@ TEST(Monitor, Startup) {
 
   {
     EXPECT_CALL(app, getState).Times(3).WillRepeatedly(Return(AppState::Init));
-    EXPECT_CALL(app, getJobs).Times(2).WillRepeatedly(Return(jobs));
+    EXPECT_CALL(app, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
 
     EXPECT_CALL(job, getConfig).Times(2).WillRepeatedly(Return(config));
     EXPECT_CALL(job, getState)
@@ -38,7 +38,7 @@ TEST(Monitor, Startup) {
 
   {
     EXPECT_CALL(app, getState).Times(3).WillRepeatedly(Return(AppState::Init));
-    EXPECT_CALL(app, getJobs).Times(2).WillRepeatedly(Return(jobs));
+    EXPECT_CALL(app, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
 
     EXPECT_CALL(job, getConfig).Times(2).WillRepeatedly(Return(config));
     EXPECT_CALL(job, getState)

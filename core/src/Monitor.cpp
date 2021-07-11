@@ -1,5 +1,6 @@
 #include <Monitor.h>
 #include <spdlog/spdlog.h>
+#include <App.h>
 
 Monitor::Monitor(u_short port, App *app) : app(app) {
   using namespace std::placeholders;
@@ -34,9 +35,9 @@ void Monitor::startup(const httplib::Request &req, httplib::Response &res) {
     return;
   }
 
-  for (auto job : app->getJobs()) {
+  for (auto job : app->getInitJobs()) {
     auto config = job->getConfig();
-    if (config.kind == JobKind::INIT && job->getState() != JobState::SUCCESS) {
+    if (job->getState() != JobState::SUCCESS) {
       res.status = 500;
     }
   }
@@ -58,10 +59,9 @@ void Monitor::liveness(const httplib::Request &req, httplib::Response &res) {
     return;
   }
 
-  for (auto job : app->getJobs()) {
+  for (auto job : app->getDaemonJobs()) {
     auto config = job->getConfig();
-    if (config.kind == JobKind::SERVICE &&
-        job->getState() != JobState::RUNNING) {
+    if (job->getState() != JobState::RUNNING) {
       res.status = 500;
     }
   }

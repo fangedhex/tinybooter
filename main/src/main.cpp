@@ -11,9 +11,9 @@ void signalHandler(int signal)
 
 int main(int argc, char **argv)
 {
-  App app;
+  App *app;
 
-  signalCallback = std::bind(&App::signalHandler, &app, std::placeholders::_1, [](int status) {
+  signalCallback = std::bind(&App::signalHandler, app, std::placeholders::_1, [](int status) {
     exit(status);
   });
 
@@ -21,10 +21,8 @@ int main(int argc, char **argv)
   signal(SIGINT, &signalHandler);
   signal(SIGTERM, &signalHandler);
 
-  app.parseArgs(argc, argv);
-  app.runOnce(JobKind::INIT);
-  app.daemon();
-  app.runOnce(JobKind::CLEANUP);
+  auto exitResult = app->run(argc, argv);
 
-  return EXIT_SUCCESS;
+  delete app;
+  return exitResult;
 }

@@ -3,7 +3,7 @@
 #include <JobMock.h>
 #include <csignal>
 
-TEST(App, ShouldStopJobs) {
+/*TEST(App, ShouldStopJobs) {
   JobMock job;
   App app;
   app.addJob(&job);
@@ -13,4 +13,4 @@ TEST(App, ShouldStopJobs) {
   app.signalHandler(SIGTERM, [](int status) {
     EXPECT_EQ(status, EXIT_SUCCESS);
   });
-}
+}*/

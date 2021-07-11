@@ -12,25 +12,28 @@ struct SystemConfig
 namespace YAML
 {
   template <>
-  struct convert<SystemConfig>
+  struct convert<SystemConfig*>
   {
-    static Node encode(const SystemConfig &rhs)
+    /*static Node encode(const SystemConfig &rhs)
     {
       Node node;
       node["healthcheck_port"] = rhs.healthcheck_port;
       node["jobs"] = rhs.jobs;
       return node;
-    }
+    }*/
 
-    static bool decode(const Node &node, SystemConfig &rhs)
+    static bool decode(const Node &node, SystemConfig* rhs)
     {
+      if (rhs == nullptr)
+        rhs = new SystemConfig();
+
       if (!node.IsMap())
       {
         return false;
       }
 
-      rhs.healthcheck_port = node["healthcheck_port"].as<unsigned short>();
-      rhs.jobs = node["jobs"].as<std::string>();
+      rhs->healthcheck_port = node["healthcheck_port"].as<unsigned short>();
+      rhs->jobs = node["jobs"].as<std::string>();
       return true;
     }
   };

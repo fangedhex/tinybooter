@@ -1,6 +1,5 @@
 #pragma once
 
-#include <App.h>
 #include <Job.h>
 #include <httplib.h>
 #include <map>
@@ -8,6 +7,7 @@
 #include <thread>
 #include <vector>
 
+class App;
 class Monitor {
 public:
   Monitor(u_short port, App *app);

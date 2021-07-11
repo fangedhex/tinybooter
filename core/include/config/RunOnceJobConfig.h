@@ -11,9 +11,9 @@ struct RunOnceJobConfig : public JobConfig
 namespace YAML
 {
   template <>
-  struct convert<RunOnceJobConfig>
+  struct convert<RunOnceJobConfig*>
   {
-    static Node encode(const RunOnceJobConfig &rhs)
+    /*static Node encode(const RunOnceJobConfig &rhs)
     {
       Node node;
 
@@ -24,19 +24,22 @@ namespace YAML
         node["timeout"] = rhs.timeout;
 
       return node;
-    }
+    }*/
 
-    static bool decode(const Node &node, RunOnceJobConfig &rhs)
+    static bool decode(const Node &node, RunOnceJobConfig* rhs)
     {
+      if (rhs == nullptr)
+        rhs = new RunOnceJobConfig();
+
       if (!node.IsMap())
       {
         return false;
       }
 
-      YAML::convert<JobConfig>::decode(node, rhs);
+      YAML::convert<JobConfig*>::decode(node, rhs);
 
       if (node["timeout"].IsDefined())
-        rhs.timeout = node["timeout"].as<uint32_t>();
+        rhs->timeout = node["timeout"].as<uint32_t>();
 
       return true;
     }

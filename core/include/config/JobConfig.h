@@ -65,8 +65,8 @@ template <> struct convert<JobKind> {
   }
 };
 
-template <> struct convert<JobConfig> {
-  static Node encode(const JobConfig &rhs) {
+template <> struct convert<JobConfig*> {
+  /*static Node encode(const JobConfig &rhs) {
     Node node;
 
     node["kind"] = rhs.kind;
@@ -75,21 +75,24 @@ template <> struct convert<JobConfig> {
     node["args"] = rhs.args;
 
     return node;
-  }
+  }*/
 
-  static bool decode(const Node &node, JobConfig &rhs) {
+  static bool decode(const Node &node, JobConfig* rhs) {
+    if (rhs == nullptr)
+      rhs = new JobConfig();
+
     if (!node.IsMap()) {
       return false;
     }
 
-    rhs.kind = node["kind"].as<JobKind>();
-    rhs.name = node["name"].as<std::string>();
-    rhs.cmd = node["cmd"].as<std::string>();
+    rhs->kind = node["kind"].as<JobKind>();
+    rhs->name = node["name"].as<std::string>();
+    rhs->cmd = node["cmd"].as<std::string>();
 
     if (!node["args"].IsSequence()) {
       return false;
     }
-    rhs.args = node["args"].as<std::vector<std::string>>();
+    rhs->args = node["args"].as<std::vector<std::string>>();
 
     return true;
   }
