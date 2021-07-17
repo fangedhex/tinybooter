@@ -1,8 +1,8 @@
 #include <Monitor.h>
 #include <spdlog/spdlog.h>
-#include <App.h>
+#include <Application.h>
 
-Monitor::Monitor(u_short port, App *app) : app(app) {
+Monitor::Monitor(u_short port, Application *app) : app(app) {
   using namespace std::placeholders;
 
   svr.Get("/startup", std::bind(&Monitor::startup, this, _1, _2));

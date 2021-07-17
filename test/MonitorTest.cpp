@@ -1,4 +1,4 @@
-#include <AppMock.h>
+#include <ApplicationMock.h>
 #include <JobMock.h>
 #include <Monitor.h>
 #include <gtest/gtest.h>
@@ -9,7 +9,7 @@ using ::testing::Return;
 TEST(Monitor, Startup) {
   JobMock* job = new JobMock();
   std::vector<Job *> jobs = {job};
-  AppMock* app = new AppMock();
+  ApplicationMock* app = new ApplicationMock();
 
   JobConfig config;
   config.kind = JobKind::INIT;

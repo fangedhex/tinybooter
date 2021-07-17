@@ -14,10 +14,10 @@ enum AppState
   Cleanup
 };
 
-class App
+class Application
 {
 public:
-  virtual ~App();
+  virtual ~Application();
 
   /// @brief Called by main function
   bool run(int argc, char **argv);

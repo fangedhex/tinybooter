@@ -1,4 +1,4 @@
-#include <App.h>
+#include <Application.h>
 #include <signal.h>
 #include <functional>
 
@@ -11,9 +11,9 @@ void signalHandler(int signal)
 
 int main(int argc, char **argv)
 {
-  App *app;
+  Application *app = new Application();
 
-  signalCallback = std::bind(&App::signalHandler, app, std::placeholders::_1, [](int status) {
+  signalCallback = std::bind(&Application::signalHandler, app, std::placeholders::_1, [](int status) {
     exit(status);
   });
 

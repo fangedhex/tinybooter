@@ -1,4 +1,4 @@
-name: Container Build
+name: cd
 on:
   push:
 jobs:

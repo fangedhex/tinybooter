@@ -1,4 +1,4 @@
-#include <App.h>
+#include <Application.h>
 
 #include <CLI/App.hpp>
 #include <CLI/Config.hpp>
@@ -13,7 +13,7 @@
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
-App::~App()
+Application::~Application()
 {
   if (state != nullptr)
     delete state;
@@ -38,15 +38,15 @@ App::~App()
   }
 }
 
-AppState App::getState() { return *this->state; }
+AppState Application::getState() { return *this->state; }
 
-std::vector<Job *> App::getInitJobs() { return this->initJobs; }
+std::vector<Job *> Application::getInitJobs() { return this->initJobs; }
 
-std::vector<Job *> App::getDaemonJobs() { return this->daemonJobs; }
+std::vector<Job *> Application::getDaemonJobs() { return this->daemonJobs; }
 
-std::vector<Job *> App::getCleanJobs() { return this->cleanJobs; }
+std::vector<Job *> Application::getCleanJobs() { return this->cleanJobs; }
 
-bool App::run(int argc, char **argv)
+bool Application::run(int argc, char **argv)
 {
   *state = AppState::Init;
 
@@ -82,7 +82,7 @@ bool App::run(int argc, char **argv)
   return EXIT_SUCCESS;
 }
 
-void App::parseArgsAndLoadConfiguration(int argc, char **argv)
+void Application::parseArgsAndLoadConfiguration(int argc, char **argv)
 {
   std::string configFilePath = "/etc/tinybooter/config.yml";
   {
@@ -134,7 +134,7 @@ void App::parseArgsAndLoadConfiguration(int argc, char **argv)
   }
 }
 
-void App::createJobs() {
+void Application::createJobs() {
   for(auto &jobYaml : this->jobsYaml)
   {
     // Create specialized job configuration depending on the job's kind
@@ -174,7 +174,7 @@ void App::createJobs() {
   }
 }
 
-void App::runOnce(JobKind kind)
+void Application::runOnce(JobKind kind)
 {
   spdlog::debug("Launching jobs with type {} ...", ToString(kind));
 
@@ -192,7 +192,7 @@ void App::runOnce(JobKind kind)
   }
 }
 
-void App::daemon()
+void Application::daemon()
 {
   spdlog::debug("Launching deamon jobs ...");
   for (auto job : this->daemonJobs)
@@ -206,7 +206,7 @@ void App::daemon()
   }
 }
 
-void App::signalHandler(int signal, std::function<void(int)> exitCallback)
+void Application::signalHandler(int signal, std::function<void(int)> exitCallback)
 {
   if (signal == SIGTERM)
   {

@@ -7,17 +7,17 @@
 #include <thread>
 #include <vector>
 
-class App;
+class Application;
 class Monitor {
 public:
-  Monitor(u_short port, App *app);
+  Monitor(u_short port, Application *app);
   ~Monitor();
 
   void stop();
 
 private:
   std::thread *thread;
-  App *app;
+  Application *app;
   httplib::Server svr;
 
   void startup(const httplib::Request &req, httplib::Response &res);
