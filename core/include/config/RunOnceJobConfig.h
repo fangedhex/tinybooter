@@ -26,17 +26,16 @@ namespace YAML
       return node;
     }*/
 
-    static bool decode(const Node &node, RunOnceJobConfig* rhs)
+    static bool decode(const Node &node, RunOnceJobConfig*& rhs)
     {
-      if (rhs == nullptr)
-        rhs = new RunOnceJobConfig();
+      rhs = new RunOnceJobConfig();
 
       if (!node.IsMap())
       {
         return false;
       }
 
-      YAML::convert<JobConfig*>::decode(node, rhs);
+      //YAML::convert<JobConfig*>::decode(node, static_cast<JobConfig*&>(rhs));
 
       if (node["timeout"].IsDefined())
         rhs->timeout = node["timeout"].as<uint32_t>();

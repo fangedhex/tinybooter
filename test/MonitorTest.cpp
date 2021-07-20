@@ -1,4 +1,5 @@
 #include <ApplicationMock.h>
+#include <JobsManagerMock.h>
 #include <JobMock.h>
 #include <Monitor.h>
 #include <gtest/gtest.h>
@@ -9,18 +10,20 @@ using ::testing::Return;
 TEST(Monitor, Startup) {
   JobMock* job = new JobMock();
   std::vector<Job *> jobs = {job};
+
   ApplicationMock* app = new ApplicationMock();
+  JobsManagerMock* jobsManager = new JobsManagerMock();
 
   JobConfig config;
   config.kind = JobKind::INIT;
 
-  Monitor monitor(8123, app);
+  Monitor monitor(8123, app, jobsManager);
 
   httplib::Client cli("localhost", 8123);
 
   {
     EXPECT_CALL(*app, getState).Times(3).WillRepeatedly(Return(AppState::Init));
-    EXPECT_CALL(*app, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
+    EXPECT_CALL(*jobsManager, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
 
     EXPECT_CALL(*job, getConfig).Times(2).WillRepeatedly(Return(config));
     EXPECT_CALL(*job, getState)
@@ -38,7 +41,7 @@ TEST(Monitor, Startup) {
 
   {
     EXPECT_CALL(*app, getState).Times(3).WillRepeatedly(Return(AppState::Init));
-    EXPECT_CALL(*app, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
+    EXPECT_CALL(*jobsManager, getInitJobs).Times(2).WillRepeatedly(Return(jobs));
 
     EXPECT_CALL(*job, getConfig).Times(2).WillRepeatedly(Return(config));
     EXPECT_CALL(*job, getState)
@@ -54,6 +57,7 @@ TEST(Monitor, Startup) {
     EXPECT_EQ(livenessRes->status, 500);
   }
 
+  delete jobsManager;
   delete app;
   delete job;
 }

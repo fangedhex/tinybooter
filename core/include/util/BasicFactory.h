@@ -3,8 +3,8 @@
 template<typename T>
 class BasicFactory {
   public:
-  template<typename ...Args>
-  virtual T* create(Args... args) {
-    return new T(...args);
+  template<typename... Args>
+  T* create(Args... args) {
+    return new T(args...);
   };
 };

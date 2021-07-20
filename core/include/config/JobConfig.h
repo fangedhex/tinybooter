@@ -6,19 +6,6 @@
 
 enum JobKind { INIT, SERVICE, CLEANUP };
 
-inline const char *ToString(JobKind v) {
-  switch (v) {
-  case INIT:
-    return "Initialization";
-  case SERVICE:
-    return "Service";
-  case CLEANUP:
-    return "Clean up";
-  default:
-    return "[Unknown JobKind]";
-  }
-}
-
 /**
  * @brief Basic job config
  *
@@ -77,9 +64,8 @@ template <> struct convert<JobConfig*> {
     return node;
   }*/
 
-  static bool decode(const Node &node, JobConfig* rhs) {
-    if (rhs == nullptr)
-      rhs = new JobConfig();
+  static bool decode(const Node &node, JobConfig*& rhs) {
+    rhs = new JobConfig();
 
     if (!node.IsMap()) {
       return false;
@@ -98,3 +84,11 @@ template <> struct convert<JobConfig*> {
   }
 };
 } // namespace YAML
+
+/**
+ * @brief Shortcut to YAML conversion function but returns the string
+ * @return string String representation of the job kind.
+ */
+inline std::string ToString(JobKind v) {
+  return YAML::convert<JobKind>::encode(v).as<std::string>();
+}

@@ -5,13 +5,14 @@
 #include <CLI/Formatter.hpp>
 #include <ChildProcess.h>
 #include <algorithm>
-#include <config/DaemonConfig.h>
-#include <config/RunOnceJobConfig.h>
 #include <exception>
 #include <glob/glob.h>
 #include <signal.h>
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
+
+Application::Application()
+: jobsManager(new JobsManager(new BasicFactory<Job>())) {}
 
 Application::~Application()
 {
@@ -21,30 +22,14 @@ Application::~Application()
   if (systemConfig != nullptr)
     delete systemConfig;
 
+  if (jobsManager != nullptr)
+    delete jobsManager;
+
   if (monitor != nullptr)
     delete monitor;
-
-  for (auto job : this->initJobs)
-  {
-    delete job;
-  }
-  for (auto job : this->daemonJobs)
-  {
-    delete job;
-  }
-  for (auto job : this->cleanJobs)
-  {
-    delete job;
-  }
 }
 
 AppState Application::getState() { return *this->state; }
-
-std::vector<Job *> Application::getInitJobs() { return this->initJobs; }
-
-std::vector<Job *> Application::getDaemonJobs() { return this->daemonJobs; }
-
-std::vector<Job *> Application::getCleanJobs() { return this->cleanJobs; }
 
 bool Application::run(int argc, char **argv)
 {
@@ -53,6 +38,7 @@ bool Application::run(int argc, char **argv)
   // Parse command line arguments + read configuration files
   try
   {
+    // TODO Maybe this function should return the yaml instead of putting it as member of the class?
     this->parseArgsAndLoadConfiguration(argc, argv);
   }
   catch (const std::exception &e)
@@ -62,22 +48,22 @@ bool Application::run(int argc, char **argv)
   }
 
   // Launch monitor server
-  monitor = new Monitor(this->systemConfig->healthcheck_port, this);
+  monitor = new Monitor(this->systemConfig->healthcheck_port, this, this->jobsManager);
 
   // Create jobs from load configuration files
-  this->createJobs();
+  this->jobsManager->createJobsFrom(this->jobsYaml);
 
   // Launch init jobs
-  this->runOnce(JobKind::INIT);
+  this->jobsManager->runOnce(JobKind::INIT);
 
   // Launch daemon jobs
-  this->daemon();
+  this->jobsManager->daemon();
 
-  // Wait for daemon jobs to exit (the only way is by receiving a signal SIGTERM
-  // or SIGINT)
+  // Wait for daemon jobs to exit
+  this->jobsManager->waitAllDaemonJobsToFinish();
 
   // Launch cleanup jobs
-  this->runOnce(JobKind::CLEANUP);
+  this->jobsManager->runOnce(JobKind::CLEANUP);
 
   return EXIT_SUCCESS;
 }
@@ -134,78 +120,6 @@ void Application::parseArgsAndLoadConfiguration(int argc, char **argv)
   }
 }
 
-void Application::createJobs() {
-  for(auto &jobYaml : this->jobsYaml)
-  {
-    // Create specialized job configuration depending on the job's kind
-    auto kind = jobYaml["kind"].as<JobKind>();
-    JobConfig* config;
-
-    if (kind == JobKind::SERVICE)
-    {
-      config = jobYaml.as<DaemonConfig*>();
-    }
-    else
-    {
-      config = jobYaml.as<RunOnceJobConfig*>();
-    }
-
-    // TODO Maybe remove the needs of a factory function and just build and pass the childprocess directly ?
-    auto childProcessFactory = [config](std::string cmd, Args args) -> ChildProcess* {
-      auto childProcess = new ChildProcess(cmd, args);
-      childProcess->setSync(line_sink(config->name));
-      return childProcess;
-    };
-
-    auto job = new Job(config, childProcessFactory);
-
-    switch(kind)
-    {
-      case JobKind::INIT:
-        this->initJobs.push_back(job);
-        break;
-      case JobKind::SERVICE:
-        this->daemonJobs.push_back(job);
-        break;
-      case JobKind::CLEANUP:
-        this->cleanJobs.push_back(job);
-        break;
-    }
-  }
-}
-
-void Application::runOnce(JobKind kind)
-{
-  spdlog::debug("Launching jobs with type {} ...", ToString(kind));
-
-  std::vector<Job*> jobs;
-  if (kind == JobKind::INIT) {
-    jobs = this->initJobs;
-  } else {
-    jobs = this->cleanJobs;
-  }
-
-  for (auto job : jobs)
-  {
-    job->launch();
-    job->wait();
-  }
-}
-
-void Application::daemon()
-{
-  spdlog::debug("Launching deamon jobs ...");
-  for (auto job : this->daemonJobs)
-  {
-    job->launch();
-  }
-
-  // We will wait until all daemon jobs exited
-  for(auto job : this->daemonJobs) {
-    job->wait();
-  }
-}
-
 void Application::signalHandler(int signal, std::function<void(int)> exitCallback)
 {
   if (signal == SIGTERM)
@@ -217,17 +131,7 @@ void Application::signalHandler(int signal, std::function<void(int)> exitCallbac
     spdlog::info("SIGINT received. Quitting...");
   }
 
-  for (auto job : this->initJobs)
-  {
-    job->stop();
-    job->wait();
-  }
-
-  for (auto job : this->daemonJobs)
-  {
-    job->stop();
-    job->wait();
-  }
+  this->jobsManager->stopAll();
 
   exitCallback(EXIT_SUCCESS);
 }

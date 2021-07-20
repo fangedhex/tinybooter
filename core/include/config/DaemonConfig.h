@@ -24,7 +24,7 @@ namespace YAML
 
     static bool decode(const Node &node, DaemonConfig* rhs)
     {
-      if (rhs == nullptr)
+      if (!rhs)
         rhs = new DaemonConfig();
 
       if (!node.IsMap())
@@ -32,7 +32,7 @@ namespace YAML
         return false;
       }
 
-      YAML::convert<JobConfig*>::decode(node, rhs);
+      //YAML::convert<JobConfig*>::decode(node, rhs);
 
       return true;
     }

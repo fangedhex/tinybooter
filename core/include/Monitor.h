@@ -6,11 +6,12 @@
 #include <sys/types.h>
 #include <thread>
 #include <vector>
+#include <JobsManager.h>
 
 class Application;
 class Monitor {
 public:
-  Monitor(u_short port, Application *app);
+  Monitor(u_short port, Application *app, JobsManager *jobsManager);
   ~Monitor();
 
   void stop();
@@ -18,6 +19,7 @@ public:
 private:
   std::thread *thread;
   Application *app;
+  JobsManager *jobsManager;
   httplib::Server svr;
 
   void startup(const httplib::Request &req, httplib::Response &res);

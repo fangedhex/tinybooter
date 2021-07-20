@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 #include <Application.h>
 
-Monitor::Monitor(u_short port, Application *app) : app(app) {
+Monitor::Monitor(u_short port, Application *app, JobsManager *jobsManager) : app(app), jobsManager(jobsManager) {
   using namespace std::placeholders;
 
   svr.Get("/startup", std::bind(&Monitor::startup, this, _1, _2));
@@ -35,7 +35,7 @@ void Monitor::startup(const httplib::Request &req, httplib::Response &res) {
     return;
   }
 
-  for (auto job : app->getInitJobs()) {
+  for (auto job : jobsManager->getInitJobs()) {
     auto config = job->getConfig();
     if (job->getState() != JobState::SUCCESS) {
       res.status = 500;
@@ -59,7 +59,7 @@ void Monitor::liveness(const httplib::Request &req, httplib::Response &res) {
     return;
   }
 
-  for (auto job : app->getDaemonJobs()) {
+  for (auto job : jobsManager->getDaemonJobs()) {
     auto config = job->getConfig();
     if (job->getState() != JobState::RUNNING) {
       res.status = 500;
